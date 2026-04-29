@@ -42,6 +42,11 @@ docker pull ghcr.io/hmc-edu/his-frontend:latest
 
 替换 `docker-compose.yml` 中的 `build:` 为 `image:` 即可直接跑。
 
+> **首次发布需要把镜像设为 Public**（GHCR 默认私有）：管理员进入
+> <https://github.com/orgs/hmc-edu/packages/container/his-backend/settings>
+> 与 <https://github.com/orgs/hmc-edu/packages/container/his-frontend/settings>，
+> 在 "Danger Zone" 把 visibility 改为 Public。否则学生需要先 `docker login ghcr.io`。
+
 ### C. 本地开发模式（学生改代码用）
 
 ```bash
