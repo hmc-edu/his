@@ -6,7 +6,7 @@ class HisApplicationTests {
 
     @Test
     void contextLoadsPlaceholder() {
-        // 教学占位：避免引入数据库依赖。
-        // 学生可以扩展为 @SpringBootTest 并使用测试库 his_test。
+        // 占位测试：避免在 CI 中引入数据库依赖。
+        // 后续可扩展为 @SpringBootTest 并使用测试库 his_test。
     }
 }

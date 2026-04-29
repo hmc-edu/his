@@ -2,7 +2,10 @@
   <div class="login-page">
     <el-card class="login-card">
       <template #header>
-        <div class="login-header">门诊 HIS 演示系统</div>
+        <div class="login-header">
+          <div class="login-title">杭州医学院门诊 HIS 系统</div>
+          <div class="login-subtitle">Hangzhou Medical College · Outpatient HIS</div>
+        </div>
       </template>
       <el-form ref="formRef" :model="form" :rules="rules" label-width="80px" @submit.prevent="onLogin">
         <el-form-item label="用户名" prop="username">
@@ -65,9 +68,18 @@ async function onLogin() {
   width: 420px;
 }
 .login-header {
+  text-align: center;
+}
+.login-title {
   font-size: 20px;
   font-weight: 600;
-  text-align: center;
+  letter-spacing: 1px;
+}
+.login-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #909399;
+  letter-spacing: 1px;
 }
 .hint {
   color: #909399;

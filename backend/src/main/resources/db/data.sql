@@ -1,4 +1,4 @@
--- 演示种子数据
+-- 杭州医学院门诊 HIS 系统 初始化数据
 -- 用户账号由 com.hmc.his.config.DataInitializer 在启动时插入（含 BCrypt 加密）
 
 -- 科室

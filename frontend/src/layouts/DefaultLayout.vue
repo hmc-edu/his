@@ -1,7 +1,10 @@
 <template>
   <el-container style="height: 100vh">
     <el-aside width="220px" style="background: #001529;">
-      <div class="brand">门诊 HIS</div>
+      <div class="brand">
+        <div class="brand-zh">杭州医学院</div>
+        <div class="brand-en">门诊 HIS 系统</div>
+      </div>
       <el-menu
         :default-active="$route.path"
         :router="true"
@@ -96,13 +99,20 @@ async function onLogout() {
 <style scoped>
 .brand {
   color: #fff;
-  font-size: 18px;
-  font-weight: 600;
   text-align: center;
-  height: 60px;
-  line-height: 60px;
-  letter-spacing: 4px;
+  padding: 12px 0;
   background: rgba(255,255,255,0.05);
+}
+.brand-zh {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 4px;
+}
+.brand-en {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #bfcbd9;
+  letter-spacing: 1px;
 }
 .topbar {
   background: #fff;

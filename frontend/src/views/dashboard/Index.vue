@@ -3,10 +3,9 @@
     <el-row :gutter="16">
       <el-col :span="12">
         <el-card>
-          <h2>欢迎使用 门诊 HIS 演示系统</h2>
+          <h2>杭州医学院门诊 HIS 系统</h2>
           <p>当前角色：<el-tag>{{ roleLabel }}</el-tag></p>
-          <p>该项目为教学演示，主线流程为：<strong>挂号 → 就诊 → 处方</strong></p>
-          <p style="color: #909399; font-size: 13px">扩展练习见 <code>docs/04-扩展练习.md</code></p>
+          <p>主线业务流程：<strong>挂号 → 就诊 → 处方</strong></p>
         </el-card>
       </el-col>
       <el-col :span="12">

@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 /**
  * 启动时初始化默认账号与医生记录。
  * 仅当 sys_user 为空时插入，避免重复执行。
- * 学生扩展提示：可在此基础上加入更多默认数据，或读取外部配置驱动初始化。
  */
 @Slf4j
 @Component

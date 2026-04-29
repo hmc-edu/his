@@ -11,8 +11,8 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI hisOpenAPI() {
         return new OpenAPI().info(new Info()
-                .title("门诊 HIS 演示系统 API")
+                .title("杭州医学院门诊 HIS 系统 API")
                 .version("0.0.1")
-                .description("教学用门诊 HIS 系统接口文档"));
+                .description("Hangzhou Medical College — Outpatient HIS API"));
     }
 }

@@ -40,7 +40,7 @@ const doctorTag = computed(() =>
 )
 
 async function load() {
-  // 教学简化：管理员看全部医生队列；DOCTOR 角色看自己（按 user_id 关联医生记录）
+  // 管理员看全部医生队列；DOCTOR 角色按 user_id 匹配自己的医生记录
   let doctorId = null
   if (userStore.role === 'DOCTOR') {
     if (!myDoctor.value) {

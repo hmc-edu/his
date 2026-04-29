@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.*;
 import java.util.List;
 
 /**
- * 教学示例：纯注解 MyBatis 写法。
+ * 纯注解 MyBatis 写法示例（与 PatientRepository 的 XML 写法对照）。
  * 适合简单 CRUD；复杂动态 SQL 推荐使用 XML（参见 PatientRepository）。
  */
 @Mapper

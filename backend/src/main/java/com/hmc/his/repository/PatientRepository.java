@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * 教学示例：XML Mapper 写法。
+ * XML Mapper 写法示例（与 DepartmentRepository 的注解写法对照）。
  * SQL 全部写在 resources/mappers/PatientMapper.xml 中。
  */
 @Mapper

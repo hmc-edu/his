@@ -1,4 +1,4 @@
--- 门诊 HIS 演示系统 数据库结构
+-- 杭州医学院门诊 HIS 系统 数据库结构
 -- 库名: his (字符集 utf8mb4)
 -- 执行前请先: CREATE DATABASE his DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 -- USE his;
