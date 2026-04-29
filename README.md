@@ -11,6 +11,8 @@
 - 前端：Vue 3 + Vite + Element Plus + Pinia + Vue Router + Axios
 - 运行环境：JDK 17、Node 18+、MySQL 8
 
+> 🇨🇳 **校园网/国内网络环境用户请先看 [docs/05-国内网络优化.md](./docs/05-国内网络优化.md)**：项目内 gradle / npm / maven 已默认走国内镜像，但 Docker Hub 与 GHCR 还需要在本机做一次配置，否则首次拉镜像会很慢。
+
 ## 三种运行方式
 
 ### A. Docker Compose 一键启动（推荐）
@@ -71,6 +73,7 @@ cd frontend && pnpm install && pnpm dev
 - [02-启动指南](./docs/02-启动指南.md)
 - [03-业务流程](./docs/03-业务流程.md)
 - [04-扩展练习](./docs/04-扩展练习.md)
+- [05-国内网络优化](./docs/05-国内网络优化.md) 🇨🇳
 
 ## 目录结构
 

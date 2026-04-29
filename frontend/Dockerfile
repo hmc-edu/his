@@ -3,7 +3,7 @@ WORKDIR /app
 
 RUN corepack enable && corepack prepare pnpm@9 --activate
 
-COPY package.json ./
+COPY package.json .npmrc ./
 RUN pnpm install --no-frozen-lockfile
 
 COPY . .
