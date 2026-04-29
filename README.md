@@ -35,19 +35,18 @@ docker compose up --build
 
 ### B. 直接拉取镜像（跳过编译）
 
-每次推送 `vX.Y.Z` 标签时，CI 会把后端/前端镜像推送到 GitHub Container Registry：
+每次推送 `vX.Y.Z` 标签时，CI 把后端/前端镜像推到 GitHub Container Registry。直接使用项目根目录的 `docker-compose.cn.yml` 即可：
 
 ```bash
-docker pull ghcr.io/hmc-edu/his-backend:latest
-docker pull ghcr.io/hmc-edu/his-frontend:latest
+docker compose -f docker-compose.cn.yml up
 ```
 
-把 `docker-compose.yml` 里的 `build:` 段改成 `image: ghcr.io/hmc-edu/his-backend:latest`（前端同理）即可直接运行。
-
-> **首次发布需要管理员把 GHCR 镜像设为 Public**（默认私有）：
+> **使用前提：管理员先把 GHCR 镜像设为 Public**（GitHub org 包默认私有）：
 > <https://github.com/orgs/hmc-edu/packages/container/his-backend/settings>
 > <https://github.com/orgs/hmc-edu/packages/container/his-frontend/settings>
-> 在 "Danger Zone" 把 visibility 改为 Public。否则使用方需先 `docker login ghcr.io`。
+> Danger Zone → Change package visibility → Public。一次性，30 秒。
+>
+> 国内网络若觉得 ghcr.io 慢，可以同步推到阿里云 ACR，改 `image:` 即可。详见 [docs/05-国内网络优化.md](./docs/05-国内网络优化.md)。
 
 ### C. 本地开发模式
 
