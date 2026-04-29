@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hmc.his.repository.PatientRepository">
+
+    <resultMap id="PatientMap" type="Patient">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="birthday" column="birthday"/>
+        <result property="phone" column="phone"/>
+        <result property="idCard" column="id_card"/>
+        <result property="address" column="address"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="searchWhere">
+        <where>
+            <if test="keyword != null and keyword != ''">
+                AND (name LIKE CONCAT('%', #{keyword}, '%')
+                  OR phone LIKE CONCAT('%', #{keyword}, '%')
+                  OR id_card LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectPage" resultMap="PatientMap">
+        SELECT * FROM patient
+        <include refid="searchWhere"/>
+        ORDER BY id DESC
+        LIMIT #{offset}, #{size}
+    </select>
+
+    <select id="countPage" resultType="long">
+        SELECT COUNT(*) FROM patient
+        <include refid="searchWhere"/>
+    </select>
+
+    <select id="selectById" resultMap="PatientMap">
+        SELECT * FROM patient WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="Patient" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO patient(name, gender, birthday, phone, id_card, address)
+        VALUES(#{name}, #{gender}, #{birthday}, #{phone}, #{idCard}, #{address})
+    </insert>
+
+    <update id="update" parameterType="Patient">
+        UPDATE patient
+        SET name = #{name},
+            gender = #{gender},
+            birthday = #{birthday},
+            phone = #{phone},
+            id_card = #{idCard},
+            address = #{address}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM patient WHERE id = #{id}
+    </delete>
+
+</mapper>

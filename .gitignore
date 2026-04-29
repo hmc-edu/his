@@ -1,0 +1,31 @@
+# Java
+*.class
+*.jar
+*.war
+backend/.gradle/
+backend/build/
+backend/out/
+backend/bin/
+backend/.idea/
+backend/*.iml
+
+# Keep gradle wrapper jar tracked (required for ./gradlew)
+!backend/gradle/wrapper/gradle-wrapper.jar
+
+# Node
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
