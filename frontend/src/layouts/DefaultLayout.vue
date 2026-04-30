@@ -86,7 +86,7 @@ const groupedMenus = computed(() => {
 })
 
 function groupIcon(g) {
-  return ({ '挂号台': 'EditPen', '医生工作站': 'Stethoscope', '基础信息': 'Files', '系统管理': 'Setting' }[g]) || 'Folder'
+  return ({ '挂号台': 'EditPen', '医生工作站': 'FirstAidKit', '基础信息': 'Files', '系统管理': 'Setting' }[g]) || 'Folder'
 }
 
 async function onLogout() {

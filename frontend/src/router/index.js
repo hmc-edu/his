@@ -71,7 +71,7 @@ const routes = [
         path: 'base/drug',
         name: 'base-drug',
         component: () => import('@/views/base/Drug.vue'),
-        meta: { title: '药品', icon: 'FirstAidKit', roles: ['ADMIN'], group: '基础信息' }
+        meta: { title: '药品', icon: 'Goods', roles: ['ADMIN'], group: '基础信息' }
       },
 
       // 系统
