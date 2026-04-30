@@ -1,6 +1,9 @@
 -- 杭州医学院门诊 HIS 系统 初始化数据
 -- 用户账号由 com.hmc.his.config.DataInitializer 在启动时插入（含 BCrypt 加密）
 
+-- 强制本会话使用 utf8mb4，避免本地 MySQL 客户端默认编码不是 utf8 导致中文乱码
+SET NAMES utf8mb4;
+
 -- 科室
 INSERT INTO department (code, name, sort) VALUES
   ('NK', '内科', 1),

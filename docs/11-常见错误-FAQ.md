@@ -346,9 +346,154 @@ DaoCloud `m.daocloud.io` 限定白名单，自定义仓库要申请。详见 [05
 
 ## 七、SQL 与数据库
 
-### 中文显示为 `?` 或乱码
+### 中文显示为 `?` / `???` / 乱码（高频问题）
 
-JDBC URL 必须带 `useUnicode=true&characterEncoding=utf8`，建库必须 `utf8mb4`。本项目都已配。
+中文乱码可能在四个环节出错，逐一排查：
+
+#### 1. 先定位是"存进去时坏了"还是"取出来时坏了"
+
+直接进 MySQL 看原始数据：
+
+```bash
+mysql -uroot -proot --default-character-set=utf8mb4 his
+```
+
+```sql
+SELECT id, name, gender, address FROM patient LIMIT 5;
+```
+
+- 如果这里就是乱码 → **数据本身写坏了**（数据库 / data.sql / JDBC 连接编码问题）
+- 如果这里是正确的中文 → **后端→前端这一段编码问题**（罕见，Spring Boot 默认 UTF-8）
+
+#### 2. 检查数据库与表的字符集
+
+```sql
+SELECT @@character_set_database, @@collation_database;
+-- 期望：utf8mb4 / utf8mb4_unicode_ci
+
+SHOW CREATE TABLE patient \G
+-- 期望：DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
+```
+
+如果数据库不是 utf8mb4：
+
+```sql
+ALTER DATABASE his CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+如果某张表不是：
+
+```sql
+ALTER TABLE patient CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+#### 3. 检查连接编码（可能是真正的元凶）
+
+```sql
+SHOW VARIABLES LIKE 'character_set%';
+```
+
+期望输出全都是 `utf8mb4`：
+
+```
+character_set_client      | utf8mb4
+character_set_connection  | utf8mb4
+character_set_database    | utf8mb4
+character_set_results     | utf8mb4
+character_set_server      | utf8mb4
+```
+
+如果 `character_set_client` 或 `character_set_results` 不是 utf8mb4，**当前会话写入的中文都会被错误编码**。强制设置：
+
+```sql
+SET NAMES utf8mb4;
+```
+
+> 项目内 `data.sql` 和 `schema.sql` 顶部都已经加了 `SET NAMES utf8mb4;`，确保导入时不丢字。
+
+#### 4. 检查 MySQL 服务器默认配置（一劳永逸）
+
+打开 MySQL 配置文件（位置因系统而异）：
+- **Windows**：`C:\ProgramData\MySQL\MySQL Server 8.0\my.ini`
+- **macOS Homebrew**：`/usr/local/etc/my.cnf` 或 `/opt/homebrew/etc/my.cnf`
+- **Linux**：`/etc/mysql/my.cnf` 或 `/etc/my.cnf`
+
+确认有以下段：
+
+```ini
+[mysqld]
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+
+[client]
+default-character-set=utf8mb4
+
+[mysql]
+default-character-set=utf8mb4
+```
+
+改完**重启 MySQL 服务**。
+
+#### 5. 已经"中招"的数据怎么办
+
+如果 `patient` 表里已经存了乱码数据，最干净的办法是重建：
+
+```bash
+# 1. 拉最新代码（已修好 data.sql 和 JDBC URL）
+git pull origin main
+
+# 2. 重建数据库
+mysql -uroot -proot -e "DROP DATABASE IF EXISTS his; CREATE DATABASE his DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+# 3. 强制用 utf8mb4 重新导入
+mysql -uroot -proot --default-character-set=utf8mb4 his < backend/src/main/resources/db/schema.sql
+mysql -uroot -proot --default-character-set=utf8mb4 his < backend/src/main/resources/db/data.sql
+
+# 4. 重启后端
+# IDEA 里点停止 → 启动；DataInitializer 会重新创建用户与医生记录
+```
+
+Docker 模式：
+
+```bash
+git pull origin main
+docker compose down -v          # ⚠️ 删 volume，清掉旧的乱码数据
+docker compose up --build
+```
+
+#### 6. 验证修复
+
+启动完后：
+
+```bash
+mysql -uroot -proot --default-character-set=utf8mb4 his \
+  -e "SELECT name, gender, address FROM patient LIMIT 3"
+```
+
+应输出：
+
+```
++--------+--------+--------------------------------+
+| name   | gender | address                        |
++--------+--------+--------------------------------+
+| 张三   | 男     | 北京市东城区东长安街1号        |
+| 李四   | 女     | 北京市西城区西长安街2号        |
+| 王小明 | 男     | 北京市海淀区中关村大街3号      |
++--------+--------+--------------------------------+
+```
+
+前端登录后看患者列表，名字与地址都应正确显示。
+
+#### 7. 常见情境对照
+
+| 现象 | 通常原因 |
+| --- | --- |
+| 所有中文都是 `???` | JDBC URL 没带 `characterEncoding=UTF-8` |
+| 中文显示成 `ä¸­æ–‡` 类奇怪字符 | 写入时是 utf8、读取时按 latin1 解码 |
+| 字符串里中文 OK，但 emoji 显示成 `??` | JDBC 用了 `characterEncoding=utf8`（实为 utf8mb3，3 字节）。改为 `UTF-8` |
+| Windows cmd 里 `mysql>` 选数据看着是乱码，但前端正常 | 是 cmd 终端编码问题，不是数据问题 |
+| 前端建的患者乱码、`data.sql` 导入的正常 | JDBC URL 编码不对 |
+| `data.sql` 导入的乱码、前端建的正常 | 客户端导入时没用 `--default-character-set=utf8mb4` |
 
 ### `Duplicate entry '...' for key`
 
