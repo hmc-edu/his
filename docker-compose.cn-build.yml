@@ -1,0 +1,60 @@
+# 国内本地编译版：mysql / 后端 / 前端 全部走 m.daocloud.io 镜像源
+# 用法：docker compose -f docker-compose.cn-build.yml up --build
+services:
+  mysql:
+    image: m.daocloud.io/docker.io/library/mysql:8.0
+    container_name: his-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: his
+      TZ: Asia/Shanghai
+    command:
+      - --default-authentication-plugin=mysql_native_password
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+    ports:
+      - "3306:3306"
+    volumes:
+      - his-mysql-data:/var/lib/mysql
+      - ./backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backend/src/main/resources/db/data.sql:/docker-entrypoint-initdb.d/02-data.sql:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build:
+      context: ./backend
+      args:
+        BASE_REGISTRY: m.daocloud.io/docker.io   # 让 Dockerfile FROM 走镜像
+    container_name: his-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/his?useUnicode=true&characterEncoding=UTF-8&connectionCollation=utf8mb4_unicode_ci&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=GMT%2B8&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        BASE_REGISTRY: m.daocloud.io/docker.io
+    container_name: his-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "8000:80"
+
+volumes:
+  his-mysql-data:

@@ -342,6 +342,42 @@ DaoCloud `m.daocloud.io` 限定白名单，自定义仓库要申请。详见 [05
 - 确认 BIOS 里虚拟化 (VT-x / AMD-V) 开启
 - Win 家庭版需要先装 WSL2
 
+### `error getting credentials - err: exit status 1, out: ``
+
+Docker 配置里指定了凭证 helper（`docker-credential-pass` / `docker-credential-secretservice` / `docker-credential-desktop`），但程序没装。
+
+修复：清掉凭证 helper 配置。
+
+```bash
+# 备份当前配置
+cp ~/.docker/config.json ~/.docker/config.json.bak 2>/dev/null
+
+# 重置成空配置（无 helper）
+mkdir -p ~/.docker
+echo '{}' > ~/.docker/config.json
+
+# 重试
+docker compose down -v
+docker compose up --build
+```
+
+如果不希望全清，只删 `credsStore` 字段也可以：
+
+```bash
+# 用任意编辑器把 ~/.docker/config.json 里的 "credsStore": "..." 那行删掉
+nano ~/.docker/config.json
+```
+
+### docker.io 拉镜像超慢或失败
+
+国内学生用项目自带的 daocloud 镜像版本：
+
+```bash
+docker compose -f docker-compose.cn-build.yml up --build
+```
+
+这个 compose 让所有 base image 走 `m.daocloud.io/docker.io/library/...`，绕开 Docker Hub 限速。
+
 ---
 
 ## 七、SQL 与数据库

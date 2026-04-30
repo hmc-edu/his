@@ -33,6 +33,11 @@ docker compose up --build
 > 第一次启动需要拉取 MySQL/Node/JDK 镜像并构建，约 5–10 分钟。
 > 重置数据：`docker compose down -v && docker compose up --build`
 
+**国内学生 docker.io 拉不动？** 用走 daocloud 镜像的版本：
+```bash
+docker compose -f docker-compose.cn-build.yml up --build
+```
+
 ### B. 直接拉取镜像（跳过编译）
 
 每次推送 `vX.Y.Z` 标签时，CI 把后端/前端镜像推到 GitHub Container Registry。直接使用项目根目录的 `docker-compose.cn.yml` 即可：
