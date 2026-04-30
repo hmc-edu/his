@@ -384,6 +384,18 @@ docker compose -f docker-compose.cn-build.yml up --build
 
 ### 中文显示为 `?` / `???` / 乱码（高频问题）
 
+> **TL;DR（90% 的情况这一条就够）**：拉最新代码，**带 `-v` 重置数据库再跑**：
+>
+> ```bash
+> git pull
+> docker compose down -v       # ⚠️ -v 必须有，否则旧 volume 里的乱码数据还在
+> docker compose -f docker-compose.cn-build.yml up --build
+> ```
+>
+> 浏览器硬刷新（Ctrl+Shift+R）后患者列表里"张三 / 北京市东城区东长安街 1 号"应该正确显示。
+>
+> 不行再继续往下排查具体环节。
+
 中文乱码可能在四个环节出错，逐一排查：
 
 #### 1. 先定位是"存进去时坏了"还是"取出来时坏了"
@@ -472,41 +484,50 @@ default-character-set=utf8mb4
 
 #### 5. 已经"中招"的数据怎么办
 
-如果 `patient` 表里已经存了乱码数据，最干净的办法是重建：
+如果 `patient` 表里已经存了乱码数据，最干净的办法是**重建数据库**——MySQL 8 容器的 init 脚本（`schema.sql` + `data.sql`）只在第一次创建 volume 时跑，必须先删掉 volume 才能重新初始化。
+
+**Docker 模式（绝大多数同学走这条）**：
 
 ```bash
-# 1. 拉最新代码（已修好 data.sql 和 JDBC URL）
+git pull origin main
+docker compose down -v                                    # ⚠️ -v 是关键，删 volume
+docker compose -f docker-compose.cn-build.yml up --build  # 国内
+# 或
+docker compose up --build                                 # 国际
+```
+
+**本地 MySQL 模式**：
+
+```bash
 git pull origin main
 
-# 2. 重建数据库
+# 重建数据库
 mysql -uroot -proot -e "DROP DATABASE IF EXISTS his; CREATE DATABASE his DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
 
-# 3. 强制用 utf8mb4 重新导入
+# 强制用 utf8mb4 重新导入
 mysql -uroot -proot --default-character-set=utf8mb4 his < backend/src/main/resources/db/schema.sql
 mysql -uroot -proot --default-character-set=utf8mb4 his < backend/src/main/resources/db/data.sql
 
-# 4. 重启后端
-# IDEA 里点停止 → 启动；DataInitializer 会重新创建用户与医生记录
-```
-
-Docker 模式：
-
-```bash
-git pull origin main
-docker compose down -v          # ⚠️ 删 volume，清掉旧的乱码数据
-docker compose up --build
+# 重启后端（IDEA 里点停止 → 启动；DataInitializer 会重新创建用户与医生记录）
 ```
 
 #### 6. 验证修复
 
-启动完后：
+启动完后（Docker 模式，**无需本地 mysql 客户端**）：
+
+```bash
+docker exec -it his-mysql mysql -uroot -proot --default-character-set=utf8mb4 his \
+  -e "SELECT name, gender, address FROM patient LIMIT 3"
+```
+
+本地 MySQL 模式：
 
 ```bash
 mysql -uroot -proot --default-character-set=utf8mb4 his \
   -e "SELECT name, gender, address FROM patient LIMIT 3"
 ```
 
-应输出：
+两种模式都应输出：
 
 ```
 +--------+--------+--------------------------------+

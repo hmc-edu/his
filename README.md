@@ -17,7 +17,17 @@
 
 ### A. Docker Compose 一键启动（推荐）
 
-只要装了 Docker，一条命令即可拉起完整系统（MySQL + 后端 + 前端）：
+只要装了 Docker，一条命令即可拉起完整系统（MySQL + 后端 + 前端）。
+
+#### 🇨🇳 国内学生用这条（已在杭州医学院校园网验证）
+
+```bash
+docker compose -f docker-compose.cn-build.yml up --build
+```
+
+`cn-build` 让 mysql / openjdk / node / nginx 全部走 `m.daocloud.io` 镜像，不依赖 Docker Hub。
+
+#### 🌍 海外或网络畅通用这条
 
 ```bash
 docker compose up --build
@@ -31,12 +41,8 @@ docker compose up --build
 默认账号：`admin / reception / doctor`，密码均为 `123456`。
 
 > 第一次启动需要拉取 MySQL/Node/JDK 镜像并构建，约 5–10 分钟。
-> 重置数据：`docker compose down -v && docker compose up --build`
-
-**国内学生 docker.io 拉不动？** 用走 daocloud 镜像的版本：
-```bash
-docker compose -f docker-compose.cn-build.yml up --build
-```
+> **重置数据库（数据混乱/乱码时必做）**：`docker compose down -v && docker compose up --build`
+> （`-v` 会把 mysql volume 也删掉，下次启动会重新跑 schema.sql 和 data.sql）
 
 ### B. 直接拉取镜像（跳过编译）
 
