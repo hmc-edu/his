@@ -11,9 +11,9 @@
 - 前端：Vue 3 + Vite + Element Plus + Pinia + Vue Router + Axios
 - 运行环境：JDK 17、Node 18+、MySQL 8
 
-## 两种运行方式
+## 三种运行方式
 
-### A. Docker Compose 一键启动（推荐，已在杭州医学院校园网验证）
+### A. Docker Compose 一键启动（看效果用，已在杭州医学院校园网验证）
 
 只要装了 Docker，一条命令即可拉起完整系统（MySQL + 后端 + 前端）：
 
@@ -35,10 +35,28 @@ docker compose up --build
 > **重置数据库（数据混乱 / 中文乱码 / 改了 schema 时必做）**：`docker compose down -v && docker compose up --build`
 > （`-v` 会把 mysql volume 也删掉，下次启动会重新跑 schema.sql 和 data.sql）
 
-### B. 本地开发模式
+### B. 混合开发模式（改代码用，推荐）⭐
+
+Docker 起 MySQL，IDEA 启后端可断点，终端 `pnpm dev` 起前端：
 
 ```bash
-# 1. 数据库
+# 1. 只启 MySQL 容器
+docker compose up -d mysql
+
+# 2. IDEA 里启动 HisApplication，或命令行：
+cd backend && ./gradlew bootRun
+
+# 3. 另开终端起前端
+cd frontend && pnpm install && pnpm dev
+# 访问 http://localhost:5173
+```
+
+完整步骤见 [02-启动指南 C 节](./docs/02-启动指南.md#c-混合模式推荐做扩展练习的同学用-)。
+
+### C. 全本地模式（不想装 Docker）
+
+```bash
+# 1. 本机 MySQL 建库
 mysql -uroot -p
 > CREATE DATABASE his DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 > USE his;
@@ -50,7 +68,6 @@ cd backend && ./gradlew bootRun
 
 # 3. 前端
 cd frontend && pnpm install && pnpm dev
-# 访问 http://localhost:5173
 ```
 
 实训文档位于 [`docs/`](./docs)，**建议第一次按下面顺序读**：
