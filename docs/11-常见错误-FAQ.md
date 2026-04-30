@@ -370,13 +370,7 @@ nano ~/.docker/config.json
 
 ### docker.io 拉镜像超慢或失败
 
-国内学生用项目自带的 daocloud 镜像版本：
-
-```bash
-docker compose -f docker-compose.cn-build.yml up --build
-```
-
-这个 compose 让所有 base image 走 `m.daocloud.io/docker.io/library/...`，绕开 Docker Hub 限速。
+项目内 `docker-compose.yml` 已经默认让所有 base image 走 `m.daocloud.io/docker.io/library/...`，国内拉应该顺畅。如果还是慢，看下 daemon 镜像加速是否配置（参见 [05-国内网络优化 §1](./05-国内网络优化.md#1-docker-hub-加速影响所有-docker-pull)）。
 
 ---
 
@@ -389,7 +383,7 @@ docker compose -f docker-compose.cn-build.yml up --build
 > ```bash
 > git pull
 > docker compose down -v       # ⚠️ -v 必须有，否则旧 volume 里的乱码数据还在
-> docker compose -f docker-compose.cn-build.yml up --build
+> docker compose up --build
 > ```
 >
 > 浏览器硬刷新（Ctrl+Shift+R）后患者列表里"张三 / 北京市东城区东长安街 1 号"应该正确显示。
@@ -490,10 +484,8 @@ default-character-set=utf8mb4
 
 ```bash
 git pull origin main
-docker compose down -v                                    # ⚠️ -v 是关键，删 volume
-docker compose -f docker-compose.cn-build.yml up --build  # 国内
-# 或
-docker compose up --build                                 # 国际
+docker compose down -v       # ⚠️ -v 是关键，删 volume
+docker compose up --build
 ```
 
 **本地 MySQL 模式**：

@@ -11,23 +11,11 @@
 - 前端：Vue 3 + Vite + Element Plus + Pinia + Vue Router + Axios
 - 运行环境：JDK 17、Node 18+、MySQL 8
 
-> 🇨🇳 **校园网/国内网络环境用户请先看 [docs/05-国内网络优化.md](./docs/05-国内网络优化.md)**：项目内 gradle / npm / maven 已默认走国内镜像，但 Docker Hub 与 GHCR 还需要在本机做一次配置，否则首次拉镜像会很慢。
+## 两种运行方式
 
-## 三种运行方式
+### A. Docker Compose 一键启动（推荐，已在杭州医学院校园网验证）
 
-### A. Docker Compose 一键启动（推荐）
-
-只要装了 Docker，一条命令即可拉起完整系统（MySQL + 后端 + 前端）。
-
-#### 🇨🇳 国内学生用这条（已在杭州医学院校园网验证）
-
-```bash
-docker compose -f docker-compose.cn-build.yml up --build
-```
-
-`cn-build` 让 mysql / openjdk / node / nginx 全部走 `m.daocloud.io` 镜像，不依赖 Docker Hub。
-
-#### 🌍 海外或网络畅通用这条
+只要装了 Docker，一条命令即可拉起完整系统（MySQL + 后端 + 前端）：
 
 ```bash
 docker compose up --build
@@ -40,26 +28,14 @@ docker compose up --build
 
 默认账号：`admin / reception / doctor`，密码均为 `123456`。
 
-> 第一次启动需要拉取 MySQL/Node/JDK 镜像并构建，约 5–10 分钟。
-> **重置数据库（数据混乱/乱码时必做）**：`docker compose down -v && docker compose up --build`
+> 项目内 `docker-compose.yml` 已经把 mysql / openjdk / node / nginx 全部走 `m.daocloud.io` 镜像，国内网络可直接拉，不需要额外配 Docker Hub 加速。
+>
+> 第一次启动需要拉取镜像并构建，约 5–10 分钟。
+>
+> **重置数据库（数据混乱 / 中文乱码 / 改了 schema 时必做）**：`docker compose down -v && docker compose up --build`
 > （`-v` 会把 mysql volume 也删掉，下次启动会重新跑 schema.sql 和 data.sql）
 
-### B. 直接拉取镜像（跳过编译）
-
-每次推送 `vX.Y.Z` 标签时，CI 把后端/前端镜像推到 GitHub Container Registry。直接使用项目根目录的 `docker-compose.cn.yml` 即可：
-
-```bash
-docker compose -f docker-compose.cn.yml up
-```
-
-> **使用前提：管理员先把 GHCR 镜像设为 Public**（GitHub org 包默认私有）：
-> <https://github.com/orgs/hmc-edu/packages/container/his-backend/settings>
-> <https://github.com/orgs/hmc-edu/packages/container/his-frontend/settings>
-> Danger Zone → Change package visibility → Public。一次性，30 秒。
->
-> 国内网络若觉得 ghcr.io 慢，可以同步推到阿里云 ACR，改 `image:` 即可。详见 [docs/05-国内网络优化.md](./docs/05-国内网络优化.md)。
-
-### C. 本地开发模式
+### B. 本地开发模式
 
 ```bash
 # 1. 数据库
@@ -82,7 +58,7 @@ cd frontend && pnpm install && pnpm dev
 | 顺序 | 文档 | 内容 |
 | --- | --- | --- |
 | 1 | [01-环境准备](./docs/01-环境准备.md) | JDK / Node / MySQL / IDE 怎么装 |
-| 2 | [02-启动指南](./docs/02-启动指南.md) | 三种启动方式 + 看到啥就是成功了 |
+| 2 | [02-启动指南](./docs/02-启动指南.md) | 启动方式 + 看到啥就是成功了 |
 | 3 | [03-业务流程](./docs/03-业务流程.md) | 主线业务怎么走 + 端到端冒烟用例 |
 | 4 | [06-架构总览](./docs/06-架构总览.md) | 鸟瞰全局：分层、请求链、关键设计 |
 | 5 | [09-数据库设计](./docs/09-数据库设计.md) | ER 图 + 每张表逐字段讲解 |
@@ -96,7 +72,7 @@ cd frontend && pnpm install && pnpm dev
 
 - 🆘 [11-常见错误-FAQ](./docs/11-常见错误-FAQ.md) — 报错按关键词查
 - 📖 [12-术语表](./docs/12-术语表.md) — 不认识的英文/中文术语
-- 🇨🇳 [05-国内网络优化](./docs/05-国内网络优化.md) — Docker / Gradle / npm 国内镜像
+- 🇨🇳 [05-国内网络优化](./docs/05-国内网络优化.md) — Docker / Gradle / npm 国内镜像与排错
 
 ## 目录结构
 
@@ -105,7 +81,7 @@ his/
 ├── backend/                Spring Boot 后端
 ├── frontend/               Vue 3 前端
 ├── docs/                   实训文档与扩展练习
-├── docker-compose.yml      容器编排
+├── docker-compose.yml      容器编排（默认走 m.daocloud.io 中转）
 └── .github/workflows/      CI（自动构建）+ Release（打 tag 自动出镜像）
 ```
 

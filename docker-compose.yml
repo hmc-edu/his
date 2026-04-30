@@ -1,6 +1,9 @@
+# 杭州医学院门诊 HIS 系统 · 一键启动
+# 所有基础镜像走 m.daocloud.io 中转，国内网络可用
+# 用法：docker compose up --build
 services:
   mysql:
-    image: mysql:8.0
+    image: m.daocloud.io/docker.io/library/mysql:8.0
     container_name: his-mysql
     restart: unless-stopped
     environment:
@@ -26,6 +29,8 @@ services:
   backend:
     build:
       context: ./backend
+      args:
+        BASE_REGISTRY: m.daocloud.io/docker.io   # 让 Dockerfile FROM 走镜像
     container_name: his-backend
     restart: unless-stopped
     depends_on:
@@ -43,6 +48,8 @@ services:
   frontend:
     build:
       context: ./frontend
+      args:
+        BASE_REGISTRY: m.daocloud.io/docker.io
     container_name: his-frontend
     restart: unless-stopped
     depends_on:
