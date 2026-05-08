@@ -39,6 +39,12 @@ const routes = [
         component: () => import('@/views/reception/RegistrationList.vue'),
         meta: { title: '挂号查询', icon: 'List', roles: ['ADMIN', 'RECEPTION'], group: '挂号台' }
       },
+      {
+        path: 'reception/billing',
+        name: 'reception-billing',
+        component: () => import('@/views/reception/Billing.vue'),
+        meta: { title: '收费台', icon: 'Money', roles: ['ADMIN', 'RECEPTION'], group: '挂号台' }
+      },
 
       // 医生工作站
       {

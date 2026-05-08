@@ -168,4 +168,39 @@ CREATE TABLE prescription_item (
     KEY idx_pi_drug (drug_id)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '处方明细';
 
+-- ----------------------------
+-- bill 账单
+-- ----------------------------
+DROP TABLE IF EXISTS bill;
+CREATE TABLE bill (
+    id              BIGINT       NOT NULL AUTO_INCREMENT,
+    bill_no         VARCHAR(30)  NOT NULL COMMENT '账单编号',
+    prescription_id BIGINT       NOT NULL,
+    total_amount    DECIMAL(10,2) NOT NULL DEFAULT 0,
+    status          VARCHAR(20)  NOT NULL DEFAULT 'PENDING' COMMENT 'PENDING/PAID/REFUNDED',
+    paid_at         DATETIME     NULL,
+    created_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at      DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_bill_no (bill_no),
+    UNIQUE KEY uk_bill_prescription (prescription_id),
+    KEY idx_bill_status (status)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '账单';
+
+-- ----------------------------
+-- bill_item 账单明细
+-- ----------------------------
+DROP TABLE IF EXISTS bill_item;
+CREATE TABLE bill_item (
+    id                   BIGINT       NOT NULL AUTO_INCREMENT,
+    bill_id              BIGINT       NOT NULL,
+    prescription_item_id BIGINT       NOT NULL,
+    drug_id              BIGINT       NOT NULL,
+    qty                  INT          NOT NULL DEFAULT 1,
+    unit_price           DECIMAL(10,2) NOT NULL,
+    subtotal             DECIMAL(10,2) NOT NULL,
+    PRIMARY KEY (id),
+    KEY idx_bi_bill (bill_id)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT '账单明细';
+
 SET FOREIGN_KEY_CHECKS = 1;

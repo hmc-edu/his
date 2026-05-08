@@ -7,6 +7,7 @@ import com.hmc.his.dto.VisitUpdateReq;
 import com.hmc.his.model.*;
 import com.hmc.his.repository.PrescriptionRepository;
 import com.hmc.his.repository.VisitRepository;
+import com.hmc.his.service.BillService;
 import com.hmc.his.service.DrugService;
 import com.hmc.his.service.RegistrationService;
 import com.hmc.his.service.VisitService;
@@ -27,18 +28,22 @@ public class VisitServiceImpl implements VisitService {
     private final PrescriptionRepository prescriptionRepository;
     private final RegistrationService registrationService;
     private final DrugService drugService;
+    private final BillService billService;
 
     @Override
     public List<Registration> queue(Long doctorId) {
-        return registrationService.list(java.time.LocalDate.now(), "WAITING", doctorId);
+        List<Registration> waiting = registrationService.list(java.time.LocalDate.now(), "WAITING", doctorId);
+        List<Registration> visiting = registrationService.list(java.time.LocalDate.now(), "VISITING", doctorId);
+        waiting.addAll(visiting);
+        return waiting;
     }
 
     @Override
     @Transactional
     public Visit start(VisitStartReq req) {
         Registration reg = registrationService.get(req.getRegistrationId());
-        if (!"WAITING".equals(reg.getStatus())) {
-            throw new BusinessException("仅待诊状态的挂号可接诊");
+        if (!"WAITING".equals(reg.getStatus()) && !"VISITING".equals(reg.getStatus())) {
+            throw new BusinessException("仅待诊或就诊中的挂号可接诊");
         }
         Visit existing = visitRepository.selectByRegistrationId(reg.getId());
         if (existing != null) {
@@ -112,6 +117,7 @@ public class VisitServiceImpl implements VisitService {
         p.setTotalAmount(total);
         p.setItems(savedItems);
         prescriptionRepository.updateTotal(p.getId(), total);
+        billService.createFromPrescription(p);
         return p;
     }
 
