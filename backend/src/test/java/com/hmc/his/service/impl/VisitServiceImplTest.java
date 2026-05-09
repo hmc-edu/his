@@ -7,6 +7,7 @@ import com.hmc.his.model.PrescriptionItem;
 import com.hmc.his.model.Visit;
 import com.hmc.his.repository.PrescriptionRepository;
 import com.hmc.his.repository.VisitRepository;
+import com.hmc.his.service.BillService;
 import com.hmc.his.service.DrugService;
 import com.hmc.his.service.RegistrationService;
 import org.junit.jupiter.api.DisplayName;
@@ -46,6 +47,7 @@ class VisitServiceImplTest {
     @Mock private PrescriptionRepository prescriptionRepository;
     @Mock private RegistrationService registrationService;
     @Mock private DrugService drugService;
+    @Mock private BillService billService;
     @InjectMocks private VisitServiceImpl visitService;
 
     @Test
